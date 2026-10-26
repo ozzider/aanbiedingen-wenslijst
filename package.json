@@ -1,0 +1,18 @@
+{
+  "name": "aanbiedingen-wenslijst",
+  "version": "1.0.0",
+  "description": "Persoonlijke wekelijkse aanbiedingenfolder per e-mail, op basis van een wenslijst",
+  "type": "module",
+  "private": true,
+  "main": "src/scheduler.js",
+  "scripts": {
+    "start": "node src/scheduler.js",
+    "run-now": "node src/cli.js run",
+    "wenslijst": "node src/cli.js"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.8",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.16"
+  }
+}
