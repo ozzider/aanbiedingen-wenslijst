@@ -1,9 +1,10 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const BESTAND = path.join(__dirname, "..", "data", "wenslijst.json");
+const DATAMAP = path.join(__dirname, "..", "data");
+const BESTAND = path.join(DATAMAP, "wenslijst.json");
 
 export async function laadWenslijst() {
   try {
@@ -16,6 +17,7 @@ export async function laadWenslijst() {
 }
 
 async function slaOp(items) {
+  await mkdir(DATAMAP, { recursive: true });
   await writeFile(BESTAND, JSON.stringify(items, null, 2) + "\n", "utf8");
 }
 
