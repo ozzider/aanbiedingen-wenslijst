@@ -51,7 +51,7 @@ async function onderzoekAh() {
       "https://api.ah.nl/mobile-services/bonuses/v1/android/promotions-shelves?size=100",
       "https://api.ah.nl/mobile-services/product-shelves/v1/bonus-shelves",
       "https://api.ah.nl/mobile-services/v1/bonuses",
-      "https://api.ah.nl/mobile-services/product/search/v2?size=1",
+      "https://api.ah.nl/mobile-services/product/search/v2?query=cola&size=5",
     ];
     for (const url of kandidaten) {
       try {
@@ -68,6 +68,22 @@ async function onderzoekAh() {
   }
 }
 
+async function dumpScriptSnippet(naam, url, scriptId, lengte = 600) {
+  console.log(`\n--- ruwe inhoud van "${scriptId}" bij ${naam} (eerste ${lengte} tekens) ---`);
+  try {
+    const html = await fetchHtml(url);
+    const regex = new RegExp(`<script id="${scriptId}"[^>]*>([\\s\\S]*?)</script>`, "i");
+    const match = html.match(regex);
+    if (!match) {
+      console.log("Niet gevonden.");
+      return;
+    }
+    console.log(match[1].slice(0, lengte));
+  } catch (err) {
+    console.log("Kon pagina niet ophalen:", err.message);
+  }
+}
+
 async function main() {
   await toonVoorbeeld("Albert Heijn", ah);
   await toonVoorbeeld("Jumbo", jumbo);
@@ -76,10 +92,13 @@ async function main() {
   await toonVoorbeeld("Aldi", aldi);
 
   await onderzoekAh();
+  await onderzoekHtmlStructuur("AH (bonus-pagina)", "https://www.ah.nl/bonus");
   await onderzoekHtmlStructuur("Jumbo", "https://www.jumbo.com/aanbiedingen");
   await onderzoekHtmlStructuur("Lidl", "https://www.lidl.nl/aanbiedingen");
   await onderzoekHtmlStructuur("Plus", "https://www.plus.nl/aanbiedingen");
   await onderzoekHtmlStructuur("Aldi", "https://www.aldi.nl/aanbiedingen.html");
+
+  await dumpScriptSnippet("Jumbo", "https://www.jumbo.com/aanbiedingen", "__NUXT_DATA__");
 }
 
 main();
