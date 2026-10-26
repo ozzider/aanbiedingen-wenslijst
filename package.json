@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node src/scheduler.js",
     "run-now": "node src/cli.js run",
-    "wenslijst": "node src/cli.js"
+    "wenslijst": "node src/cli.js",
+    "debug": "node src/debug.js"
   },
   "dependencies": {
     "dotenv": "^18.0.8",
