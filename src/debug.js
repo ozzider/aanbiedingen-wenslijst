@@ -72,13 +72,56 @@ async function dumpScriptSnippet(naam, url, scriptId, lengte = 600) {
   console.log(`\n--- ruwe inhoud van "${scriptId}" bij ${naam} (eerste ${lengte} tekens) ---`);
   try {
     const html = await fetchHtml(url);
-    const regex = new RegExp(`<script id="${scriptId}"[^>]*>([\\s\\S]*?)</script>`, "i");
+    const regex = new RegExp(`<script\\b[^>]*\\bid="${scriptId}"[^>]*>([\\s\\S]*?)</script>`, "i");
     const match = html.match(regex);
     if (!match) {
       console.log("Niet gevonden.");
       return;
     }
     console.log(match[1].slice(0, lengte));
+  } catch (err) {
+    console.log("Kon pagina niet ophalen:", err.message);
+  }
+}
+
+async function zoekPrijsveldNamen(naam, url, scriptId) {
+  console.log(`\n--- mogelijke prijsvelden in "${scriptId}" bij ${naam} ---`);
+  try {
+    const html = await fetchHtml(url);
+    const regex = new RegExp(`<script\\b[^>]*\\bid="${scriptId}"[^>]*>([\\s\\S]*?)</script>`, "i");
+    const match = html.match(regex);
+    if (!match) {
+      console.log("Datablob niet gevonden.");
+      return;
+    }
+    const tekst = match[1];
+    const gevondenVelden = new Set();
+    for (const m of tekst.matchAll(/"(\w*[Pp]rice\w*|\w*[Pp]rijs\w*|\w*[Dd]iscount\w*)"\s*:/g)) {
+      gevondenVelden.add(m[1]);
+    }
+    console.log("Veldnamen met 'price'/'prijs'/'discount' erin:", [...gevondenVelden].slice(0, 30));
+    const voorbeeld = tekst.match(/\{[^{}]{0,300}"(\w*[Pp]rice\w*)"[^{}]{0,100}\}/);
+    if (voorbeeld) console.log("Voorbeeld-object:", voorbeeld[0]);
+  } catch (err) {
+    console.log("Kon pagina niet ophalen:", err.message);
+  }
+}
+
+async function onderzoekLdJsonTypes(naam, url) {
+  console.log(`\n--- welke @type's zitten er in de ld+json van ${naam}? ---`);
+  try {
+    const html = await fetchHtml(url);
+    const blokken = [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)];
+    console.log(`${blokken.length} ld+json-blok(ken) gevonden.`);
+    blokken.forEach((blok, i) => {
+      try {
+        const data = JSON.parse(blok[1]);
+        const types = Array.isArray(data) ? data.map((d) => d["@type"]) : [data["@type"]];
+        console.log(`  blok ${i + 1}: @type = ${JSON.stringify(types)}`);
+      } catch {
+        console.log(`  blok ${i + 1}: kon niet geparsed worden`);
+      }
+    });
   } catch (err) {
     console.log("Kon pagina niet ophalen:", err.message);
   }
@@ -99,6 +142,8 @@ async function main() {
   await onderzoekHtmlStructuur("Aldi", "https://www.aldi.nl/aanbiedingen.html");
 
   await dumpScriptSnippet("Jumbo", "https://www.jumbo.com/aanbiedingen", "__NUXT_DATA__");
+  await onderzoekLdJsonTypes("Lidl", "https://www.lidl.nl/aanbiedingen");
+  await zoekPrijsveldNamen("Aldi", "https://www.aldi.nl/aanbiedingen.html", "__NEXT_DATA__");
 }
 
 main();

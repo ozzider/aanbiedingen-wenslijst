@@ -29,7 +29,9 @@ export async function fetchHtml(url, opts) {
 
 /** Haalt een JSON-blob op die veel sites (vaak Next.js) in een <script>-tag in de HTML meeleveren. */
 export function haalIngebedJson(html, scriptId = "__NEXT_DATA__") {
-  const regex = new RegExp(`<script id="${scriptId}"[^>]*>([\\s\\S]*?)</script>`, "i");
+  // id="..." kan ergens tussen de andere attributen van de <script>-tag staan, niet per se
+  // direct na "<script ", dus die volgorde mag niet worden aangenomen.
+  const regex = new RegExp(`<script\\b[^>]*\\bid="${scriptId}"[^>]*>([\\s\\S]*?)</script>`, "i");
   const match = html.match(regex);
   if (!match) return null;
   try {
