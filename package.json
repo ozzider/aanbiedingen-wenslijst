@@ -9,7 +9,8 @@
     "start": "node src/scheduler.js",
     "run-now": "node src/cli.js run",
     "wenslijst": "node src/cli.js",
-    "debug": "node src/debug.js"
+    "debug": "node src/debug.js",
+    "test-mail": "node src/test-mail.js"
   },
   "dependencies": {
     "dotenv": "^18.0.8",
