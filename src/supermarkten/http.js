@@ -1,6 +1,24 @@
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
+/**
+ * Een "devalue"-revivers-object dat ELK onbekend wrapper-type accepteert en gewoon de
+ * binnenste waarde teruggeeft (identity). Nuxt's __NUXT_DATA__ gebruikt eigen
+ * Vue-reactiviteitstypes (ShallowReactive, EmptyShallowRef, ...) waarvan we het precieze
+ * ledenbestand niet kennen en ook niet nodig hebben om er producten uit te vissen - dit
+ * voorkomt dat we voor elk nieuw type apart een foutmelding moeten oplossen.
+ */
+export function maakDevalueCatchAllRevivers() {
+  return new Proxy(
+    {},
+    {
+      has: () => true,
+      get: () => (v) => v,
+      getOwnPropertyDescriptor: () => ({ configurable: true, enumerable: true, value: (v) => v }),
+    }
+  );
+}
+
 async function fetchMetTimeout(url, opts = {}, timeoutMs = 10000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);

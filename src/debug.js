@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { unflatten } from "devalue";
-import { fetchHtml, fetchJson, haalIngebedJson } from "./supermarkten/http.js";
+import { fetchHtml, fetchJson, haalIngebedJson, maakDevalueCatchAllRevivers } from "./supermarkten/http.js";
 import { haalAanbiedingen as ah } from "./supermarkten/ah.js";
 import { haalAanbiedingen as jumbo } from "./supermarkten/jumbo.js";
 import { haalAanbiedingen as lidl } from "./supermarkten/lidl.js";
@@ -138,15 +138,6 @@ async function onderzoekLdJsonTypes(naam, url) {
 
 async function onderzoekJumboHydratie() {
   console.log("\n--- Jumbo: __NUXT_DATA__ ontcijferen met devalue ---");
-  const revivers = {
-    ShallowReactive: (v) => v,
-    Reactive: (v) => v,
-    Ref: (v) => v,
-    ShallowRef: (v) => v,
-    EmptyShallowReactive: (v) => v,
-    EmptyRef: (v) => v,
-    NuxtError: (v) => v,
-  };
   try {
     const html = await fetchHtml("https://www.jumbo.com/aanbiedingen");
     const ruw = haalIngebedJson(html, "__NUXT_DATA__");
@@ -154,7 +145,7 @@ async function onderzoekJumboHydratie() {
       console.log("Datablob niet gevonden.");
       return;
     }
-    const data = unflatten(ruw, revivers);
+    const data = unflatten(ruw, maakDevalueCatchAllRevivers());
     console.log("Ontcijferen gelukt. Top-level sleutels:", Object.keys(data));
 
     const tekst = JSON.stringify(data);
