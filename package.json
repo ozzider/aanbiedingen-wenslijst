@@ -13,6 +13,7 @@
     "test-mail": "node src/test-mail.js"
   },
   "dependencies": {
+    "devalue": "^6.0.3",
     "dotenv": "^18.0.8",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.16"

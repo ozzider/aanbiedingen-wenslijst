@@ -1,5 +1,6 @@
 import "dotenv/config";
-import { fetchHtml, fetchJson } from "./supermarkten/http.js";
+import { unflatten } from "devalue";
+import { fetchHtml, fetchJson, haalIngebedJson } from "./supermarkten/http.js";
 import { haalAanbiedingen as ah } from "./supermarkten/ah.js";
 import { haalAanbiedingen as jumbo } from "./supermarkten/jumbo.js";
 import { haalAanbiedingen as lidl } from "./supermarkten/lidl.js";
@@ -135,6 +136,41 @@ async function onderzoekLdJsonTypes(naam, url) {
   }
 }
 
+async function onderzoekJumboHydratie() {
+  console.log("\n--- Jumbo: __NUXT_DATA__ ontcijferen met devalue ---");
+  const revivers = {
+    ShallowReactive: (v) => v,
+    Reactive: (v) => v,
+    Ref: (v) => v,
+    ShallowRef: (v) => v,
+    EmptyShallowReactive: (v) => v,
+    EmptyRef: (v) => v,
+    NuxtError: (v) => v,
+  };
+  try {
+    const html = await fetchHtml("https://www.jumbo.com/aanbiedingen");
+    const ruw = haalIngebedJson(html, "__NUXT_DATA__");
+    if (!ruw) {
+      console.log("Datablob niet gevonden.");
+      return;
+    }
+    const data = unflatten(ruw, revivers);
+    console.log("Ontcijferen gelukt. Top-level sleutels:", Object.keys(data));
+
+    const tekst = JSON.stringify(data);
+    const zoekterm = "Goudreinetten";
+    const pos = tekst.indexOf(zoekterm);
+    if (pos === -1) {
+      console.log(`"${zoekterm}" niet gevonden in de ontcijferde data.`);
+    } else {
+      console.log(`Context rond "${zoekterm}":`);
+      console.log(tekst.slice(Math.max(0, pos - 300), pos + 300));
+    }
+  } catch (err) {
+    console.log("Ontcijferen mislukt:", err.message);
+  }
+}
+
 async function main() {
   await toonVoorbeeld("Albert Heijn", ah);
   await toonVoorbeeld("Jumbo", jumbo);
@@ -150,6 +186,7 @@ async function main() {
   await onderzoekHtmlStructuur("Aldi", "https://www.aldi.nl/aanbiedingen.html");
 
   await dumpScriptSnippet("Jumbo", "https://www.jumbo.com/aanbiedingen", "__NUXT_DATA__");
+  await onderzoekJumboHydratie();
   await onderzoekLdJsonTypes("Lidl", "https://www.lidl.nl/aanbiedingen");
   await zoekPrijsveldNamen("Aldi", "https://www.aldi.nl/aanbiedingen.html", "__NEXT_DATA__");
 }
