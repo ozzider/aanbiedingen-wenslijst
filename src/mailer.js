@@ -90,6 +90,8 @@ export function renderFolderHtml(matches) {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<meta name="supported-color-schemes" content="light dark" />
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, Helvetica, sans-serif; background: #eef1ee; color: #1c1c1c; margin: 0; padding: 0; }
   .buiten { width: 100%; padding: 24px 12px; }
@@ -117,6 +119,20 @@ export function renderFolderHtml(matches) {
   .voettekst { text-align: center; padding: 20px 12px 0; font-size: 11.5px; color: #9a9a9a; }
   @media (max-width: 480px) {
     .kop, .inhoud { padding-left: 18px; padding-right: 18px; }
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #121212 !important; color: #ededed !important; }
+    .folder { background: #1e1e1e !important; box-shadow: none !important; }
+    .sectie-kop { border-bottom-color: #2f9e63 !important; }
+    .sectie-titel { color: #ededed !important; }
+    .sectie-telling { color: #9a9a9a !important; }
+    .kaart { border-bottom-color: #2c2c2c !important; }
+    .naam { color: #ededed !important; }
+    .omschrijving { color: #a3a3a3 !important; }
+    .prijs-badge { background: #3a2a1a !important; color: #ffb36b !important; }
+    .leeg-titel { color: #ededed !important; }
+    .leeg-tekst { color: #9a9a9a !important; }
+    .voettekst { color: #777777 !important; }
   }
 </style>
 </head>
