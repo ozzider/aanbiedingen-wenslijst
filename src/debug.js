@@ -14,10 +14,18 @@ async function toonVoorbeeld(naam, fn) {
   console.log(`\n=== ${naam} ===`);
   try {
     const items = await fn();
-    console.log(`${items.length} item(s) gevonden.`);
-    items.slice(0, 12).forEach((item, i) => {
+    const metPrijs = items.filter((item) => item.prijs);
+    console.log(`${items.length} item(s) gevonden, waarvan ${metPrijs.length} met een prijs.`);
+    console.log("-- eerste 6 (ongeacht prijs) --");
+    items.slice(0, 6).forEach((item, i) => {
       console.log(`  ${i + 1}. "${item.naam}"${item.prijs ? ` - ${item.prijs}` : ""}`);
     });
+    if (metPrijs.length) {
+      console.log("-- eerste 6 MET prijs --");
+      metPrijs.slice(0, 6).forEach((item, i) => {
+        console.log(`  ${i + 1}. "${item.naam}" - ${item.prijs}`);
+      });
+    }
   } catch (err) {
     console.log("Onverwachte fout:", err.message);
   }
