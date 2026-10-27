@@ -147,15 +147,23 @@ async function onderzoekJumboHydratie() {
     }
     const data = unflatten(ruw, maakDevalueCatchAllRevivers());
     console.log("Ontcijferen gelukt. Top-level sleutels:", Object.keys(data));
+    console.log("Sleutels in data.data:", Object.keys(data.data || {}));
+    console.log("Sleutels in data.pinia:", Object.keys(data.pinia || {}));
 
+    // Zoek generiek naar prijspatronen (bv. "1,49" of "€1,49") in plaats van een
+    // specifieke productnaam - aanbiedingen wisselen per week, dus een hardgecodeerde
+    // naam van vorige week kan deze week al weer weg zijn.
     const tekst = JSON.stringify(data);
-    const zoekterm = "Goudreinetten";
-    const pos = tekst.indexOf(zoekterm);
-    if (pos === -1) {
-      console.log(`"${zoekterm}" niet gevonden in de ontcijferde data.`);
+    const regex = /"[^"\\]{0,60}?(\d{1,3},\d{2})[^"\\]{0,20}?"/g;
+    const matches = [...tekst.matchAll(regex)].slice(0, 5);
+    if (matches.length === 0) {
+      console.log("Geen prijsachtige tekst (bv. \"1,49\") gevonden in de ontcijferde data.");
     } else {
-      console.log(`Context rond "${zoekterm}":`);
-      console.log(tekst.slice(Math.max(0, pos - 300), pos + 300));
+      console.log(`${matches.length} prijsachtige tekst-fragmenten gevonden, met context:`);
+      for (const m of matches) {
+        const start = Math.max(0, m.index - 200);
+        console.log("...", tekst.slice(start, m.index + m[0].length + 50), "...\n");
+      }
     }
   } catch (err) {
     console.log("Ontcijferen mislukt:", err.message);
