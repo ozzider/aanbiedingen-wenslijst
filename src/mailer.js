@@ -52,8 +52,12 @@ function renderSectie(wensItem, aanbiedingen) {
   return `
   <tr>
     <td class="sectie-kop">
-      <span class="sectie-titel">${escapeHtml(wensItem)}</span>
-      <span class="sectie-telling">${telling}</span>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td class="sectie-titel">${escapeHtml(wensItem)}</td>
+          <td class="sectie-telling">${telling}</td>
+        </tr>
+      </table>
     </td>
   </tr>
   <tr>
@@ -93,25 +97,27 @@ export function renderFolderHtml(matches) {
 <meta name="color-scheme" content="light dark" />
 <meta name="supported-color-schemes" content="light dark" />
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, Helvetica, sans-serif; background: #eef1ee; color: #1c1c1c; margin: 0; padding: 0; }
-  .buiten { width: 100%; padding: 24px 12px; }
-  .folder { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-  .kop { background: linear-gradient(135deg, #1b6e45, #2f9e63); padding: 28px 28px 24px; color: #ffffff; }
+  html, body { width: 100% !important; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, Helvetica, sans-serif; background: #eef1ee; color: #1c1c1c; }
+  table { max-width: 100%; }
+  .buiten { width: 100%; padding: 24px 12px; box-sizing: border-box; }
+  .folder { width: 100%; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); box-sizing: border-box; }
+  .kop { background: linear-gradient(135deg, #1b6e45, #2f9e63); padding: 28px 28px 24px; color: #ffffff; box-sizing: border-box; }
   .kop-emoji { font-size: 28px; margin-bottom: 4px; }
   .kop h1 { font-size: 20px; margin: 0 0 4px; font-weight: 700; }
   .kop .datum { font-size: 13px; opacity: 0.85; text-transform: capitalize; }
-  .inhoud { padding: 8px 28px 28px; }
+  .inhoud { padding: 8px 28px 28px; box-sizing: border-box; }
   .sectie-kop { padding: 24px 0 10px; border-bottom: 2px solid #1b6e45; }
-  .sectie-titel { font-size: 15px; font-weight: 700; color: #1c1c1c; text-transform: capitalize; }
-  .sectie-telling { float: right; font-size: 12px; color: #888; font-weight: 400; }
-  table.kaarten { margin-top: 4px; }
+  .sectie-titel { font-size: 15px; font-weight: 700; color: #1c1c1c; text-transform: capitalize; text-align: left; }
+  .sectie-telling { font-size: 12px; color: #888; font-weight: 400; text-align: right; white-space: nowrap; vertical-align: bottom; }
+  table.kaarten { margin-top: 4px; width: 100%; }
   .kaart { padding: 14px 0; border-bottom: 1px solid #f0f0ee; }
   .kaart-laatste { border-bottom: none; }
   .winkel-badge { display: inline-block; color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 6px; }
-  .naam { font-size: 14px; font-weight: 600; color: #1c1c1c; line-height: 1.35; }
-  .omschrijving { font-size: 12.5px; color: #777; margin-top: 2px; }
-  .prijs-cel { text-align: right; vertical-align: top; white-space: nowrap; width: 90px; }
-  .prijs-badge { display: inline-block; background: #fff2e8; color: #c24a00; font-size: 13px; font-weight: 700; padding: 5px 10px; border-radius: 8px; }
+  .naam { font-size: 14px; font-weight: 600; color: #1c1c1c; line-height: 1.35; word-break: break-word; overflow-wrap: anywhere; }
+  .omschrijving { font-size: 12.5px; color: #777; margin-top: 2px; word-break: break-word; overflow-wrap: anywhere; }
+  .prijs-cel { text-align: right; vertical-align: top; white-space: nowrap; width: 84px; max-width: 84px; }
+  .prijs-badge { display: inline-block; background: #fff2e8; color: #c24a00; font-size: 13px; font-weight: 700; padding: 5px 10px; border-radius: 8px; white-space: nowrap; }
   .leeg { text-align: center; padding: 40px 16px; }
   .leeg-emoji { font-size: 36px; margin-bottom: 8px; }
   .leeg-titel { font-size: 15px; font-weight: 700; color: #1c1c1c; margin-bottom: 4px; }
