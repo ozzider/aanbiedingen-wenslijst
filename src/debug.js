@@ -151,29 +151,30 @@ async function onderzoekJumboHydratie() {
     console.log("Sleutels in data.pinia:", Object.keys(data.pinia || {}));
     console.log("Sleutels in data.pinia.promotion:", Object.keys(data.pinia?.promotion || {}));
 
-    // De vorige keer vonden we prijsachtige tags in data.pinia.promotion - dump hier
-    // het eerste volledige object dat we daar tegenkomen (op elke diepte) zodat we de
-    // complete vorm zien (productnaam, geldigheid, etc.), niet alleen een fragment.
-    function vindEersteObjectMetTag(node, diepte = 0) {
-      if (diepte > 6 || node == null || typeof node !== "object") return null;
+    // Zoek door de HELE ontcijferde data (niet aangenomen waar het zit) naar het eerste
+    // object met een "tags"-array, en onthoud via welk pad we daar kwamen.
+    function vindEersteObjectMetTag(node, pad = "data", diepte = 0, gezien = new Set()) {
+      if (diepte > 10 || node == null || typeof node !== "object" || gezien.has(node)) return null;
+      gezien.add(node);
       if (Array.isArray(node)) {
-        for (const item of node) {
-          const gevonden = vindEersteObjectMetTag(item, diepte + 1);
+        for (let i = 0; i < node.length; i++) {
+          const gevonden = vindEersteObjectMetTag(node[i], `${pad}[${i}]`, diepte + 1, gezien);
           if (gevonden) return gevonden;
         }
         return null;
       }
-      if (Array.isArray(node.tags) && node.tags.length) return node;
+      if (Array.isArray(node.tags) && node.tags.length) return { object: node, pad };
       for (const key of Object.keys(node)) {
-        const gevonden = vindEersteObjectMetTag(node[key], diepte + 1);
+        const gevonden = vindEersteObjectMetTag(node[key], `${pad}.${key}`, diepte + 1, gezien);
         if (gevonden) return gevonden;
       }
       return null;
     }
-    const voorbeeld = vindEersteObjectMetTag(data.pinia?.promotion);
-    if (voorbeeld) {
+    const resultaat = vindEersteObjectMetTag(data);
+    if (resultaat) {
+      console.log(`Gevonden op pad: ${resultaat.pad}`);
       console.log("Volledig voorbeeldobject met 'tags':");
-      console.log(JSON.stringify(voorbeeld, null, 2).slice(0, 2500));
+      console.log(JSON.stringify(resultaat.object, null, 2).slice(0, 2500));
     } else {
       console.log("Geen object met een 'tags'-array gevonden in data.pinia.promotion.");
     }
