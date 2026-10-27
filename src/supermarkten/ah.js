@@ -271,6 +271,21 @@ function prijsTekst(price) {
   return undefined;
 }
 
+/**
+ * Veel AH-acties hebben geen vaste prijs maar een actietype zoals "2 HALEN 1 BETALEN"
+ * of "25%" - dat staat niet in promo.price maar in promo.promotionLabels (de gekleurde
+ * "ster"-badge die je op de site ziet).
+ */
+function actieTekst(promo) {
+  const label = promo.promotionLabels?.[0];
+  if (label) {
+    const delen = [label.topText, label.centerText, label.bottomText].filter(Boolean);
+    if (delen.length) return delen.join(" ").trim();
+    if (label.title) return label.title;
+  }
+  return promo.exampleText || undefined;
+}
+
 export async function haalAanbiedingen() {
   const { periodStart, periodEnd, weekNummer } = huidigeBonusperiode();
 
@@ -326,7 +341,7 @@ export async function haalAanbiedingen() {
         resultaat.push({
           supermarkt: "Albert Heijn",
           naam,
-          prijs: prijsTekst(promo.price),
+          prijs: prijsTekst(promo.price) || actieTekst(promo),
           omschrijving: promo.subtitle || promo.periodDescription || undefined,
         });
       }
