@@ -260,11 +260,14 @@ function huidigeBonusperiode() {
 
 function prijsTekst(price) {
   if (!price) return undefined;
-  if (price.label) return price.label;
+  // price.now.amount staat al in hele euro's (dus NIET delen door 100 - dat gaf
+  // bijvoorbeeld "€0,06" voor een fles wijn in plaats van de echte €5,99).
   if (price.now?.amount != null) {
-    const euro = (price.now.amount / 100).toFixed(2).replace(".", ",");
-    return `€${euro}`;
+    return `€${price.now.amount.toFixed(2).replace(".", ",")}`;
   }
+  // price.label is alleen bruikbaar als er geen numerieke prijs is (anders staat er
+  // soms iets generieks als "Adviesprijs" in plaats van een bedrag).
+  if (price.label) return price.label;
   return undefined;
 }
 
