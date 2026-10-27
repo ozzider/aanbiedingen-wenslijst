@@ -26,6 +26,9 @@ function renderKaart(aanbieding, isLaatste) {
   const omschrijving = aanbieding.omschrijving
     ? `<div class="omschrijving">${escapeHtml(aanbieding.omschrijving)}</div>`
     : "";
+  const geldigheid = aanbieding.geldigheid
+    ? `<div class="geldigheid">Geldig ${escapeHtml(aanbieding.geldigheid)}</div>`
+    : "";
   const prijs = aanbieding.prijs
     ? `<span class="prijs-badge">${escapeHtml(aanbieding.prijs)}</span>`
     : "";
@@ -38,6 +41,7 @@ function renderKaart(aanbieding, isLaatste) {
             <span class="winkel-badge" style="background:${kleur};">${escapeHtml(aanbieding.supermarkt)}</span>
             <div class="naam">${escapeHtml(aanbieding.naam)}</div>
             ${omschrijving}
+            ${geldigheid}
           </td>
           <td class="prijs-cel">${prijs}</td>
         </tr>
@@ -116,6 +120,7 @@ export function renderFolderHtml(matches) {
   .winkel-badge { display: inline-block; color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 6px; }
   .naam { font-size: 14px; font-weight: 600; color: #1c1c1c; line-height: 1.35; word-break: break-word; overflow-wrap: anywhere; }
   .omschrijving { font-size: 12.5px; color: #777; margin-top: 2px; word-break: break-word; overflow-wrap: anywhere; }
+  .geldigheid { font-size: 11.5px; color: #999; margin-top: 3px; }
   .prijs-cel { text-align: right; vertical-align: top; white-space: nowrap; width: 84px; max-width: 84px; }
   .prijs-badge { display: inline-block; background: #fff2e8; color: #c24a00; font-size: 13px; font-weight: 700; padding: 5px 10px; border-radius: 8px; white-space: nowrap; }
   .leeg { text-align: center; padding: 40px 16px; }
@@ -135,6 +140,7 @@ export function renderFolderHtml(matches) {
     .kaart { border-bottom-color: #2c2c2c !important; }
     .naam { color: #ededed !important; }
     .omschrijving { color: #a3a3a3 !important; }
+    .geldigheid { color: #888888 !important; }
     .prijs-badge { background: #3a2a1a !important; color: #ffb36b !important; }
     .leeg-titel { color: #ededed !important; }
     .leeg-tekst { color: #9a9a9a !important; }
@@ -170,7 +176,8 @@ export function renderFolderTekst(matches) {
     regels.push(`\n${item.toUpperCase()}`);
     for (const a of aanbiedingen) {
       const prijs = a.prijs ? ` - ${a.prijs}` : "";
-      regels.push(`  - [${a.supermarkt}] ${a.naam}${prijs}`);
+      const geldigheid = a.geldigheid ? ` (geldig ${a.geldigheid})` : "";
+      regels.push(`  - [${a.supermarkt}] ${a.naam}${prijs}${geldigheid}`);
     }
   }
   return regels.join("\n");

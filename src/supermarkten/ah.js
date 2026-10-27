@@ -286,6 +286,18 @@ function actieTekst(promo) {
   return promo.exampleText || undefined;
 }
 
+const DAG_MAAND = { day: "numeric", month: "short" };
+
+function geldigheidTekst(promo) {
+  if (promo.periodDescription) return promo.periodDescription;
+  if (promo.periodStart && promo.periodEnd) {
+    const start = new Date(promo.periodStart).toLocaleDateString("nl-NL", DAG_MAAND);
+    const eind = new Date(promo.periodEnd).toLocaleDateString("nl-NL", DAG_MAAND);
+    return `${start} t/m ${eind}`;
+  }
+  return undefined;
+}
+
 export async function haalAanbiedingen() {
   const { periodStart, periodEnd, weekNummer } = huidigeBonusperiode();
 
@@ -342,7 +354,8 @@ export async function haalAanbiedingen() {
           supermarkt: "Albert Heijn",
           naam,
           prijs: prijsTekst(promo.price) || actieTekst(promo),
-          omschrijving: promo.subtitle || promo.periodDescription || undefined,
+          omschrijving: promo.subtitle || undefined,
+          geldigheid: geldigheidTekst(promo),
         });
       }
     }
